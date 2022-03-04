@@ -1,0 +1,54 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: ID!
+  email: String!
+  username: String!
+  passwordHash: String!
+  passwordSalt: String!
+  deletedAt: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Query {
+  user(id: String!): User!
+  users(filters: UserFiltersInput!): [User!]!
+}
+
+input UserFiltersInput {
+  search: String
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  updateUser(input: UpdateUserInput!): User!
+  deleteUser(input: DeleteUserInput!): User
+  login(input: UserLoginInput!): String!
+}
+
+input CreateUserInput {
+  username: String!
+  email: String!
+  plainPassword: String!
+}
+
+input UpdateUserInput {
+  id: ID!
+  username: String
+  email: String
+}
+
+input DeleteUserInput {
+  id: ID!
+}
+
+input UserLoginInput {
+  username: String!
+  plainPassword: String!
+}

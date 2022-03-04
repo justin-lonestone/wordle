@@ -1,38 +1,60 @@
+import { GqlAuthGuard } from './../auth/guards/gql-auth.guard';
+import { UseGuards } from '@nestjs/common';
+import { UserFiltersInput } from './dtos/user-filters.dto';
 import { UsersService } from 'src/users/users.service';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { User } from './models/user.model';
-import { GetUserArgs } from './dto/args/get-user.args';
-import { GetUsersArgs } from './dto/args/get-users.args';
-import { CreateUserInput } from './dto/input/create-user.input';
-import { UpdateUserInput } from './dto/input/update-user.input.ts';
-import { DeleteUserInput } from './dto/input/delete-user.input';
+import { User } from './user.entity';
+import { CreateUserInput } from './dtos/create-user.dto';
+import { UpdateUserInput } from './dtos/update-user.dto';
+import { DeleteUserInput } from './dtos/delete-user.dto';
+import { NotFoundError } from '@mikro-orm/core';
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly userService: UsersService) {}
 
-  @Query(() => User, { name: 'user', nullable: true })
-  getUser(@Args() getUserArgs: GetUserArgs): User {
-    return this.userService.getUser(getUserArgs);
-  }
-
-  @Query(() => [User], { name: 'users', nullable: 'items' })
-  getUsers(@Args() getUsersArgs: GetUsersArgs): User[] {
-    return this.userService.getUsers(getUsersArgs);
+  @Mutation(() => User)
+  createUser(@Args('input') dto: CreateUserInput): Promise<User> {
+    return this.userService.create(dto);
   }
 
   @Mutation(() => User)
-  createUser(@Args('createUserData') createUserData: CreateUserInput): User {
-    return this.userService.createUser(createUserData);
+  async updateUser(@Args('input') dto: UpdateUserInput): Promise<User> {
+    const userToUpdate = await this.userService.findOne({ id: dto.id });
+
+    if (!userToUpdate) {
+      throw new NotFoundError('USER_NOT_FOUND');
+    }
+
+    return this.userService.update(userToUpdate, dto);
   }
 
-  @Mutation(() => User)
-  updateUser(@Args('updateUserData') updateUserData: UpdateUserInput): User {
-    return this.userService.updateUser(updateUserData);
+  @Mutation(() => User, { nullable: true })
+  @UseGuards(GqlAuthGuard)
+  async deleteUser(@Args('input') dto: DeleteUserInput): Promise<User> {
+    const userToDelete = await this.userService.findOne({ id: dto.id });
+    if (!userToDelete) {
+      throw new NotFoundError('USER_NOT_FOUND');
+    }
+
+    return this.userService.delete(userToDelete);
   }
 
-  @Mutation(() => User)
-  deleteUser(@Args('deleteUserData') deleteUserData: DeleteUserInput): User {
-    return this.userService.deleteUser(deleteUserData);
+  @Query(() => User)
+  @UseGuards(GqlAuthGuard)
+  async user(@Args('id') id: string): Promise<User> {
+    const user = await this.userService.getById(id);
+
+    if (!user) {
+      throw new NotFoundError('USER_NOT_FOUND');
+    }
+
+    return user;
+  }
+
+  @Query(() => [User])
+  @UseGuards(GqlAuthGuard)
+  users(@Args('filters') filters: UserFiltersInput): Promise<User[]> {
+    return this.userService.findMany(filters);
   }
 }

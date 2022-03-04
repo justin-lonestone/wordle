@@ -1,48 +1,77 @@
 import { Injectable } from '@nestjs/common';
-import { GetUserArgs } from './dto/args/get-user.args';
-import { GetUsersArgs } from './dto/args/get-users.args';
-import { CreateUserInput } from './dto/input/create-user.input';
-import { DeleteUserInput } from './dto/input/delete-user.input';
-import { UpdateUserInput } from './dto/input/update-user.input.ts';
-import { User } from './models/user.model';
-import { v4 as uuidv4 } from 'uuid';
+import { CreateUserInput } from './dtos/create-user.dto';
+import { UpdateUserInput } from './dtos/update-user.dto';
+import { User } from './user.entity';
+import { InjectRepository } from '@mikro-orm/nestjs';
+import { EntityRepository } from '@mikro-orm/postgresql';
+import { FilterQuery, wrap } from '@mikro-orm/core';
+import { UserFiltersInput } from './dtos/user-filters.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepo: EntityRepository<User>,
+  ) {}
 
-  public createUser(createUserData: CreateUserInput): User {
-    const user: User = { userId: uuidv4(), ...createUserData };
-    this.users.push(user);
+  async getById(id: string): Promise<User | null> {
+    return this.userRepo.findOne({ id });
+  }
+
+  async findOne(filters: FilterQuery<User>): Promise<User | null> {
+    console.log('filters: ', filters);
+    return this.userRepo.findOne(filters);
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
+    return this.findOne({ username });
+  }
+
+  async findMany(filters: UserFiltersInput): Promise<User[]> {
+    const qb = this.userRepo.createQueryBuilder('user');
+
+    if (filters.search) {
+      qb.andWhere({
+        username: {
+          $ilike: `%${filters.search}%`,
+        },
+      });
+    }
+
+    return qb.getResult();
+  }
+
+  async create(dto: CreateUserInput): Promise<User> {
+    const user = new User();
+
+    user.email = dto.email;
+    user.username = dto.username;
+
+    user.passwordSalt = await bcrypt.genSalt();
+    user.passwordHash = await bcrypt.hash(dto.plainPassword, user.passwordSalt);
+
+    await this.userRepo.persistAndFlush(user);
 
     return user;
   }
 
-  public updateUser(updateUserData: UpdateUserInput): User {
-    const user = this.users.find(
-      (user) => user.userId === updateUserData.userId,
-    );
+  async update(user: User, dto: UpdateUserInput): Promise<User> {
+    wrap(user).assign({
+      email: dto.email || user.email,
+      username: dto.username || user.username,
+    });
 
-    Object.assign(user, updateUserData);
+    await this.userRepo.persistAndFlush(user);
+
     return user;
   }
 
-  public getUser(getUserArgs: GetUserArgs): User {
-    return this.users.find((user) => user.userId === getUserArgs.userId);
-  }
+  async delete(user: User): Promise<User> {
+    user.deletedAt = new Date();
 
-  public getUsers(getUsersArgs: GetUsersArgs): User[] {
-    return getUsersArgs.userIds.map((userId) => this.getUser({ userId }));
-  }
+    await this.userRepo.persistAndFlush(user);
 
-  public deleteUser(deleteUserData: DeleteUserInput): User {
-    const userIndex = this.users.findIndex(
-      (user) => user.userId === deleteUserData.userId,
-    );
-
-    const user = this.users[userIndex];
-
-    this.users.splice(userIndex);
     return user;
   }
 }
