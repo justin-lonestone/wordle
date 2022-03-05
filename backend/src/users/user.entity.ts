@@ -1,10 +1,9 @@
-import { Entity, PrimaryKey, Filter, Property } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { v4 } from 'uuid';
 
 @Entity()
 @ObjectType()
-@Filter({ name: 'inactive', cond: { deletedAt: { $ne: null } } })
 export class User {
   @PrimaryKey({ type: 'uuid' })
   @Field(() => ID)
@@ -15,7 +14,7 @@ export class User {
   email!: string;
 
   @Field(() => String)
-  @Property()
+  @Property({ unique: true })
   username!: string;
 
   @Field()

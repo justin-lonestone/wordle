@@ -14,12 +14,6 @@ const options: MikroOrmModuleSyncOptions = {
   validate: true,
   strict: true,
   metadataProvider: TsMorphMetadataProvider,
-  filters: {
-    active: {
-      cond: { deletedAt: null },
-      entity: ['User'],
-    },
-  },
   debug: process.env.NODE_ENV !== 'production',
 };
 
