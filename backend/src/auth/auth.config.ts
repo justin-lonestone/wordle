@@ -1,4 +1,7 @@
 import { registerAs } from '@nestjs/config';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 interface AuthConfig {
   jwtSecret?: string;
@@ -7,6 +10,6 @@ interface AuthConfig {
 export default registerAs(
   'auth',
   (): AuthConfig => ({
-    jwtSecret: 'secret', // + process.env.JWT_SECRET,
+    jwtSecret: process.env.JWT_SECRET,
   }),
 );

@@ -49,6 +49,6 @@ input DeleteUserInput {
 }
 
 input UserLoginInput {
-  username: String!
+  emailOrUsername: String!
   plainPassword: String!
 }

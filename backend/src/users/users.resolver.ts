@@ -14,11 +14,13 @@ export class UsersResolver {
   constructor(private readonly userService: UsersService) {}
 
   @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
   createUser(@Args('input') dto: CreateUserInput): Promise<User> {
     return this.userService.create(dto);
   }
 
   @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
   async updateUser(@Args('input') dto: UpdateUserInput): Promise<User> {
     const userToUpdate = await this.userService.findOne({ id: dto.id });
 

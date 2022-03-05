@@ -20,12 +20,21 @@ export class UsersService {
   }
 
   async findOne(filters: FilterQuery<User>): Promise<User | null> {
-    console.log('filters: ', filters);
     return this.userRepo.findOne(filters);
   }
 
-  async findByUsername(username: string): Promise<User | null> {
-    return this.findOne({ username });
+  async findByEmailOrUsername(emailOrUsername: string): Promise<User | null> {
+    const qb = this.userRepo.createQueryBuilder('user');
+
+    if (emailOrUsername) {
+      qb.andWhere({ username: { $eq: emailOrUsername } });
+      qb.orWhere({ email: { $eq: emailOrUsername } });
+      qb.limit(1);
+    }
+
+    const response = await qb.getResult();
+
+    return response[0];
   }
 
   async findMany(filters: UserFiltersInput): Promise<User[]> {

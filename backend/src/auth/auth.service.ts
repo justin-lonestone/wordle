@@ -19,8 +19,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(username: string, plainPassword: string): Promise<string> {
-    const user = await this.userService.findByUsername(username);
+  async login(emailOrUsername: string, plainPassword: string): Promise<string> {
+    const user = await this.userService.findByEmailOrUsername(emailOrUsername);
 
     if (
       !user ||
