@@ -24,8 +24,8 @@ export class AuthService {
 
     if (
       !user ||
-      !user.passwordHash ||
-      !bcrypt.compareSync(plainPassword, user.passwordHash)
+      !user.password ||
+      !bcrypt.compareSync(plainPassword, user.password)
     ) {
       throw new UserInputError('WRONG_CREDENTIALS');
     }

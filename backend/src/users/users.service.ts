@@ -57,8 +57,8 @@ export class UsersService {
     user.email = dto.email;
     user.username = dto.username;
 
-    user.passwordSalt = await bcrypt.genSalt();
-    user.passwordHash = await bcrypt.hash(dto.plainPassword, user.passwordSalt);
+    const salt = await bcrypt.genSalt();
+    user.password = await bcrypt.hash(dto.password, salt);
 
     await this.userRepo.persistAndFlush(user);
 

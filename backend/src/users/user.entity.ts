@@ -17,13 +17,8 @@ export class User {
   @Property({ unique: true })
   username!: string;
 
-  @Field()
   @Property()
-  passwordHash!: string;
-
-  @Field()
-  @Property()
-  passwordSalt!: string;
+  password!: string;
 
   @Field(() => Date, { nullable: true })
   @Property({ nullable: true })
