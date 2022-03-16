@@ -6,8 +6,6 @@ type User {
   id: ID!
   email: String!
   username: String!
-  passwordHash: String!
-  passwordSalt: String!
   deletedAt: DateTime
 }
 
@@ -35,7 +33,7 @@ type Mutation {
 input CreateUserInput {
   username: String!
   email: String!
-  plainPassword: String!
+  password: String!
 }
 
 input UpdateUserInput {
@@ -49,6 +47,6 @@ input DeleteUserInput {
 }
 
 input UserLoginInput {
-  emailOrUsername: String!
-  plainPassword: String!
+  identifier: String!
+  password: String!
 }

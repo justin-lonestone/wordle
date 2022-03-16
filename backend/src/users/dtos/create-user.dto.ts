@@ -9,5 +9,5 @@ export class CreateUserInput {
   email!: string;
 
   @Field()
-  plainPassword?: string;
+  password?: string;
 }

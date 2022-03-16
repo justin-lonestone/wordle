@@ -8,6 +8,6 @@ export class AuthResolver {
 
   @Mutation(() => String)
   login(@Args('input') input: UserLoginInput): Promise<string> {
-    return this.authService.login(input.emailOrUsername, input.plainPassword);
+    return this.authService.login(input.identifier, input.password);
   }
 }
