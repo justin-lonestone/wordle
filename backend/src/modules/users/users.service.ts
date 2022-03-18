@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserInput } from './dtos/create-user.dto';
-import { UpdateUserInput } from './dtos/update-user.dto';
-import { User } from './user.entity';
+import { CreateUserInput } from './inputs/create-user.input';
+import { UpdateUserInput } from './inputs/update-user.input';
+import { User } from '../../entities/user.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { FilterQuery, wrap } from '@mikro-orm/core';
-import { UserFiltersInput } from './dtos/user-filters.dto';
+import { UserFiltersInput } from './inputs/user-filters.input';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

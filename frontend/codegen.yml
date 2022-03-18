@@ -1,0 +1,25 @@
+overwrite: true
+schema: 'http://localhost:5000/graphql'
+documents: 'src/**/*.gql'
+generates:
+  src/graphql/types.ts:
+    plugins:
+      - 'typescript'
+  src/graphql/introspection-result.ts:
+    plugins:
+      - fragment-matcher
+  src/:
+    preset: near-operation-file
+    presetConfig:
+      baseTypesPath: graphql/types.ts
+      extension: .generated.tsx
+    plugins:
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      strictScalars: true
+      scalars:
+        DateTime: string
+        Upload: File
+        EventUserID: string

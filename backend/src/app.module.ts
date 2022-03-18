@@ -3,11 +3,11 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { ApolloDriver } from '@nestjs/apollo';
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { join } from 'path';
 import mikroConfig from './mikro-orm.config';
-import authConfig from './auth/auth.config';
+import authConfig from './modules/auth/auth.config';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import authConfig from './auth/auth.config';
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       uploads: false,
-      autoSchemaFile: join(process.cwd(), 'src', 'graphql', 'schema.gql'),
+      autoSchemaFile: join(process.cwd(), 'src', 'schema.gql'),
 
       formatError(error) {
         console.error(error, error.path?.join('.'));
