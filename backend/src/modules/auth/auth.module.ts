@@ -1,7 +1,7 @@
 import { AuthResolver } from './auth.resolver';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { JwtStrategy } from './jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from './../users/users.module';
+import { UsersModule } from '../users/users.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';

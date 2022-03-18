@@ -1,13 +1,13 @@
-import { GqlAuthGuard } from './../auth/guards/gql-auth.guard';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
-import { UserFiltersInput } from './dtos/user-filters.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/modules/users/users.service';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { User } from './user.entity';
-import { CreateUserInput } from './dtos/create-user.dto';
-import { UpdateUserInput } from './dtos/update-user.dto';
-import { DeleteUserInput } from './dtos/delete-user.dto';
+import { User } from '../../entities/user.entity';
+import { CreateUserInput } from './inputs/create-user.input';
 import { NotFoundError } from '@mikro-orm/core';
+import { UpdateUserInput } from './inputs/update-user.input';
+import { DeleteUserInput } from './inputs/delete-user.input';
+import { UserFiltersInput } from './inputs/user-filters.input';
 
 @Resolver(() => User)
 export class UsersResolver {
