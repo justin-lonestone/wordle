@@ -1,16 +1,18 @@
+import { ApolloProvider } from '@apollo/client';
 import { ChakraProvider } from '@chakra-ui/react';
-import { Route, Routes } from 'react-router-dom';
-import Login from './Login';
-import Wordle from './Wordle';
+import client from '../modules/apollo/apolloClient';
+import AuthProvider from './atoms/AuthProvider';
+import Router from './pages/Router';
 
 function App() {
   return (
-    <ChakraProvider>
-      <Routes>
-        <Route index element={<Wordle />} />
-        <Route path="/login" element={<Login />} />
-      </Routes>
-    </ChakraProvider>
+    <ApolloProvider client={client}>
+      <ChakraProvider>
+        <AuthProvider>
+          <Router />
+        </AuthProvider>
+      </ChakraProvider>
+    </ApolloProvider>
   );
 }
 

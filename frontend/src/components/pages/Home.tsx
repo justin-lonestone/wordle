@@ -1,7 +1,7 @@
 import React from 'react';
 
-function Wordle() {
+function Home() {
   return <div>Wordle</div>;
 }
 
-export default Wordle;
+export default Home;
