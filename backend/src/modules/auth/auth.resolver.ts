@@ -1,6 +1,6 @@
 import { AuthService } from './auth.service';
 import { Resolver, Mutation, Args } from '@nestjs/graphql';
-import { UserLoginInput } from 'src/modules/users/inputs/user-login.input';
+import { UserLoginInput } from 'src/modules/auth/inputs/user-login.input';
 
 @Resolver()
 export class AuthResolver {
@@ -8,6 +8,6 @@ export class AuthResolver {
 
   @Mutation(() => String)
   login(@Args('input') input: UserLoginInput): Promise<string> {
-    return this.authService.login(input.identifier, input.password);
+    return this.authService.login(input);
   }
 }

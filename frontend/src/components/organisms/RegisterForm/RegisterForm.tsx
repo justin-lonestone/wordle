@@ -6,36 +6,46 @@ import { Box, Link, Text } from '@chakra-ui/layout';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useLoginMutation } from './LoginForm.generated';
+import { useRegisterMutation } from './RegisterForm.generated';
+import { useLoginMutation } from '../LoginForm/LoginForm.generated';
 import { useNavigate, Link as RouterLink, Navigate } from 'react-router-dom';
 
-const LoginForm = () => {
+const RegisterForm = () => {
   const navigate = useNavigate();
   const { token, setCurrentToken } = useAuth();
+
+  const [register] = useRegisterMutation();
   const [login] = useLoginMutation();
 
-  const loginSchema = z.object({
-    identifier: z.string().nonempty('errors:form.required'),
+  const resgisterSchema = z.object({
+    email: z.string().email('errors:form.required').nonempty('errors:form.required'),
+    username: z.string().nonempty('errors:form.required'),
     password: z.string()
   });
 
-  type FormData = z.infer<typeof loginSchema>;
+  type FormData = z.infer<typeof resgisterSchema>;
 
   const {
     handleSubmit,
     control,
     formState: { isSubmitting }
   } = useForm<FormData>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(resgisterSchema),
     defaultValues: {
-      identifier: '',
+      email: '',
+      username: '',
       password: ''
     }
   });
 
   const onSubmit = handleSubmit(async (values) => {
     try {
-      const { data } = await login({ variables: { input: values } });
+      await register({ variables: { input: values } });
+
+      const identifier = values.username;
+      const password = values.password;
+
+      const { data } = await login({ variables: { input: { identifier, password } } });
 
       if (data?.login && setCurrentToken) {
         setCurrentToken(data.login);
@@ -52,7 +62,18 @@ const LoginForm = () => {
     <Form onSubmit={onSubmit}>
       <Controller
         control={control}
-        name="identifier"
+        name="email"
+        render={({ field: { ...props }, fieldState: { error } }) => {
+          return (
+            <FormInput type="email" error={error} {...props}>
+              Adresse e-mail
+            </FormInput>
+          );
+        }}
+      />
+      <Controller
+        control={control}
+        name="username"
         render={({ field: { ...props }, fieldState: { error } }) => {
           return (
             <FormInput type="text" error={error} {...props}>
@@ -79,12 +100,12 @@ const LoginForm = () => {
           type="submit"
           colorScheme={'blackAlpha'}
           mt={5}>
-          Se connecter
+          Créer un compte
         </Button>
         <Text mt={2.5}>
-          Je n'ai pas de compte,{' '}
-          <Link as={RouterLink} to="/register" color="teal.500">
-            créer un compte
+          J'ai déjà un compte,{' '}
+          <Link as={RouterLink} to="/login" color="teal.500">
+            me connecter
           </Link>
         </Text>
       </Box>
@@ -92,4 +113,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;

@@ -1,8 +1,8 @@
 import { ApolloProvider } from '@apollo/client';
 import { ChakraProvider } from '@chakra-ui/react';
+import { AuthProvider } from '../contexts/AuthContext';
 import client from '../modules/apollo/apolloClient';
-import AuthProvider from './atoms/AuthProvider';
-import Router from './pages/Router';
+import Router from '../router/Router';
 
 function App() {
   return (
